@@ -1,51 +1,51 @@
-/* draggable element */
-const item = document.querySelector('.image');
+var columns = document.querySelectorAll('.image');
+var draggingClass = 'dragging';
+var dragSource;
 
-item.addEventListener('dragstart', dragStart);
-
-function dragStart(e) {
-    e.dataTransfer.setData('text/plain', e.target.id);
-    setTimeout(() => {
-        e.target.classList.add('hide');
-    }, 0);
-}
-
-
-/* drop targets */
-const boxes = document.querySelectorAll('.box');
-
-boxes.forEach(box => {
-    box.addEventListener('dragenter', dragEnter)
-    box.addEventListener('dragover', dragOver);
-    box.addEventListener('dragleave', dragLeave);
-    box.addEventListener('drop', drop);
+Array.prototype.forEach.call(flex, function (col) {
+  col.addEventListener('dragstart', handleDragStart, false);
+  col.addEventListener('dragenter', handleDragEnter, false)
+  col.addEventListener('dragover', handleDragOver, false);
+  col.addEventListener('dragleave', handleDragLeave, false);
+  col.addEventListener('drop', handleDrop, false);
+  col.addEventListener('dragend', handleDragEnd, false);
 });
 
-
-function dragEnter(e) {
-    e.preventDefault();
-    e.target.classList.add('drag-over');
+function handleDragStart (evt) {
+  dragSource = this;
+  evt.target.classList.add(draggingClass);
+  evt.dataTransfer.effectAllowed = 'move';
+  evt.dataTransfer.setData('text/html', this.innerHTML);
 }
 
-function dragOver(e) {
-    e.preventDefault();
-    e.target.classList.add('drag-over');
+function handleDragOver (evt) {
+  evt.dataTransfer.dropEffect = 'move';
+  evt.preventDefault();
 }
 
-function dragLeave(e) {
-    e.target.classList.remove('drag-over');
+function handleDragEnter (evt) {
+  this.classList.add('over');
 }
 
-function drop(e) {
-    e.target.classList.remove('drag-over');
+function handleDragLeave (evt) {
+  this.classList.remove('over');
+}
 
-    // get the draggable element
-    const id = e.dataTransfer.getData('text/plain');
-    const draggable = document.getElementById(id);
+function handleDrop (evt) {
+  evt.stopPropagation();
+  
+  if (dragSource !== this) {
+    dragSource.innerHTML = this.innerHTML;
+    this.innerHTML = evt.dataTransfer.getData('text/html');
+  }
+  
+  evt.preventDefault();
+}
 
-    // add it to the drop target
-    e.target.appendChild(draggable);
-
-    // display the draggable element
-    draggable.classList.remove('hide');
+function handleDragEnd (evt) {
+  Array.prototype.forEach.call(columns, function (col) {
+    ['over', 'dragging'].forEach(function (className) {
+      col.classList.remove(className);
+    });
+  });
 }
