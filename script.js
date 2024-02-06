@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     if (draggedItem) {
       draggedItem.style.display = 'block';
-      if (e.target.classList.contains('picture')) {
+      if (e.target.classList.contains('image')) {
         e.target.parentNode.insertBefore(draggedItem, e.target);
       } else if (e.target.classList.contains('flex')) {
         e.target.appendChild(draggedItem);
