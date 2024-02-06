@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     picture.addEventListener('dragstart', () => {
       draggedItem = picture;
       setTimeout(() => {
-        picture.style.display = 'none';
+        picture.style.display = 'block';
       }, 0);
     });
 
