@@ -1,51 +1,41 @@
-var columns = document.querySelectorAll('.image');
-var draggingClass = 'dragging';
-var dragSource;
+document.addEventListener('DOMContentLoaded', () => {
+  const pictures = document.querySelectorAll('.image');
 
-Array.prototype.forEach.call(flex, function (col) {
-  col.addEventListener('dragstart', handleDragStart, false);
-  col.addEventListener('dragenter', handleDragEnter, false)
-  col.addEventListener('dragover', handleDragOver, false);
-  col.addEventListener('dragleave', handleDragLeave, false);
-  col.addEventListener('drop', handleDrop, false);
-  col.addEventListener('dragend', handleDragEnd, false);
-});
+  let draggedItem = null;
 
-function handleDragStart (evt) {
-  dragSource = this;
-  evt.target.classList.add(draggingClass);
-  evt.dataTransfer.effectAllowed = 'move';
-  evt.dataTransfer.setData('text/html', this.innerHTML);
-}
+  pictures.forEach(picture => {
+    picture.addEventListener('dragstart', () => {
+      draggedItem = picture;
+      setTimeout(() => {
+        picture.style.display = 'none';
+      }, 0);
+    });
 
-function handleDragOver (evt) {
-  evt.dataTransfer.dropEffect = 'move';
-  evt.preventDefault();
-}
-
-function handleDragEnter (evt) {
-  this.classList.add('over');
-}
-
-function handleDragLeave (evt) {
-  this.classList.remove('over');
-}
-
-function handleDrop (evt) {
-  evt.stopPropagation();
-  
-  if (dragSource !== this) {
-    dragSource.innerHTML = this.innerHTML;
-    this.innerHTML = evt.dataTransfer.getData('text/html');
-  }
-  
-  evt.preventDefault();
-}
-
-function handleDragEnd (evt) {
-  Array.prototype.forEach.call(columns, function (col) {
-    ['over', 'dragging'].forEach(function (className) {
-      col.classList.remove(className);
+    picture.addEventListener('dragend', () => {
+      setTimeout(() => {
+        draggedItem.style.display = 'block';
+        draggedItem = null;
+      }, 0);
     });
   });
-}
+
+  document.addEventListener('dragover', e => {
+    e.preventDefault();
+  });
+
+  document.addEventListener('dragenter', e => {
+    e.preventDefault();
+  });
+
+  document.addEventListener('drop', e => {
+    e.preventDefault();
+    if (draggedItem) {
+      draggedItem.style.display = 'block';
+      if (e.target.classList.contains('picture')) {
+        e.target.parentNode.insertBefore(draggedItem, e.target);
+      } else if (e.target.classList.contains('flex')) {
+        e.target.appendChild(draggedItem);
+      }
+    }
+  });
+});
