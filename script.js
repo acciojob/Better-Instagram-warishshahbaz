@@ -1,53 +1,41 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const draggables = document.querySelectorAll('.drag');
+document.addEventListener('DOMContentLoaded', () => {
+  const pictures = document.querySelectorAll('.image');
 
-    let dragSrcEl = null;
+  let draggedItem = null;
 
-    function handleDragStart(e) {
-        dragSrcEl = this;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.innerHTML);
-    }
-
-    function handleDragOver(e) {
-        if (e.preventDefault) {
-            e.preventDefault(); 
-        }
-        e.dataTransfer.dropEffect = 'move'; 
-        return false;
-    }
-
-    function handleDragEnter(e) {
-        this.classList.add('over');
-    }
-
-    function handleDragLeave(e) {
-        this.classList.remove('over'); 
-    }
-
-    function handleDrop(e) {
-        if (e.stopPropagation) {
-            e.stopPropagation(); 
-        }
-        if (dragSrcEl !== this) {
-            dragSrcEl.innerHTML = this.innerHTML;
-            this.innerHTML = e.dataTransfer.getData('text/html');
-        }
-        return false;
-    }
-
-    function handleDragEnd(e) {
-        draggables.forEach(function (drag) {
-            drag.classList.remove('over');
-        });
-    }
-
-    draggables.forEach(function (drag) {
-        drag.addEventListener('dragstart', handleDragStart, false);
-        drag.addEventListener('dragenter', handleDragEnter, false);
-        drag.addEventListener('dragover', handleDragOver, false);
-        drag.addEventListener('dragleave', handleDragLeave, false);
-        drag.addEventListener('drop', handleDrop, false);
-        drag.addEventListener('dragend', handleDragEnd, false);
+  pictures.forEach(picture => {
+    picture.addEventListener('dragstart', () => {
+      draggedItem = picture;
+      setTimeout(() => {
+        picture.style.display = 'block';
+      }, 0);
     });
+
+    picture.addEventListener('dragend', () => {
+      setTimeout(() => {
+        draggedItem.style.display = 'block';
+        draggedItem = null;
+      }, 0);
+    });
+  });
+
+  document.addEventListener('dragover', e => {
+    e.preventDefault();
+  });
+
+  document.addEventListener('dragenter', e => {
+    e.preventDefault();
+  });
+
+  document.addEventListener('drop', e => {
+    e.preventDefault();
+    if (draggedItem) {
+      draggedItem.style.display = 'block';
+      if (e.target.classList.contains('image')) {
+        e.target.parentNode.insertBefore(draggedItem, e.target);
+      } else if (e.target.classList.contains('flex')) {
+        e.target.appendChild(draggedItem);
+      }
+    }
+  });
 });
