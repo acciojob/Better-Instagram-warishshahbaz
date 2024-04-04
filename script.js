@@ -1,31 +1,48 @@
-document.addEventListener('DOMContentLoaded', function() {
-  let draggedItem = null;
+//your code here
+//your code here
+let dragindex = 0;
+let dropindex = 0;
+let clone = "";
 
-  document.querySelectorAll('.draggable').forEach(item => {
-    item.addEventListener('dragstart', function() {
-      draggedItem = this;
-      setTimeout(() => {
-        this.style.display = 'none';
-      }, 0);
-    });
+const images = document.querySelectorAll(".image");
 
-    item.addEventListener('dragend', function() {
-      setTimeout(() => {
-        this.style.display = 'block';
-        draggedItem = null;
-      }, 0);
-    });
+function drag(e) {
+  e.dataTransfer.setData("text", e.target.id);
+}
 
-    item.addEventListener('dragover', function(e) {
-      e.preventDefault();
-    });
+function allowDrop(e) {
+  e.preventDefault();
+}
 
-    item.addEventListener('drop', function() {
-      if (draggedItem !== null && draggedItem !== this) {
-        const temp = this.style.backgroundImage;
-        this.style.backgroundImage = draggedItem.style.backgroundImage;
-        draggedItem.style.backgroundImage = temp;
-      }
-    });
-  });
-});
+function drop(e) {
+  clone = e.target.cloneNode(true);
+  let data = e.dataTransfer.getData("text");
+  let nodelist = document.getElementById("parent").childNodes;
+  console.log(data, e.target.id);
+  for (let i = 0; i < nodelist.length; i++) {
+    if (nodelist[i].id == data) {
+      dragindex = i;
+    }
+  }
+
+  dragdrop(clone);
+
+  document
+    .getElementById("parent")
+    .replaceChild(document.getElementById(data), e.target);
+
+  document
+    .getElementById("parent")
+    .insertBefore(
+      clone,
+      document.getElementById("parent").childNodes[dragindex]
+    );
+}
+
+const dragdrop = (image) => {
+  image.ondragstart = drag;
+  image.ondragover = allowDrop;
+  image.ondrop = drop;
+};
+
+images.forEach(dragdrop);
